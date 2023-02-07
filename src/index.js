@@ -1,5 +1,7 @@
 const express = require('express');
 const fs = require('fs').promises;
+const validateEmail = require('../middlewares/validate_email');
+const validatePassword = require('../middlewares/validate_password');
 const genToken = require('../utils/generate_token');
 
 const app = express();
@@ -45,7 +47,7 @@ app.get('/talker/:id', async (request, response) => {
   return response.status(HTTP_OK_STATUS).json(filterId[0]);
 });
 
-app.post('/login', async (req, res) => {
+app.post('/login', validateEmail, validatePassword, async (req, res) => {
   const { email, password } = req.body;
   if ([email, password].includes(undefined)) {
     res.status(401).json({ message: 'Email ou Password não preenchido' });
