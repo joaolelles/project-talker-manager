@@ -1,5 +1,6 @@
 const express = require('express');
 const fs = require('fs').promises;
+const genToken = require('../utils/generate_token');
 
 const app = express();
 app.use(express.json());
@@ -42,4 +43,13 @@ app.get('/talker/:id', async (request, response) => {
     return response.status(404).json({ message: 'Pessoa palestrante não encontrada' });
   }
   return response.status(HTTP_OK_STATUS).json(filterId[0]);
+});
+
+app.post('/login', async (req, res) => {
+  const { email, password } = req.body;
+  if ([email, password].includes(undefined)) {
+    res.status(401).json({ message: 'Email ou Password não preenchido' });
+  }
+  const tokenGen = genToken();
+  return res.status(HTTP_OK_STATUS).json({ token: tokenGen });
 });
