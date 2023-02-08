@@ -1,8 +1,17 @@
 const express = require('express');
 const fs = require('fs').promises;
+const path = require('path');
+const genToken = require('../utils/generate_token');
 const validateEmail = require('../middlewares/validate_email');
 const validatePassword = require('../middlewares/validate_password');
-const genToken = require('../utils/generate_token');
+const validateAuth = require('../middlewares/validate_auth');
+const validateName = require('../middlewares/validate_name');
+const validateAge = require('../middlewares/validate_age');
+const validateTalk = require('../middlewares/validate_talk');
+const validateWatchedAt = require('../middlewares/validate_watchedAt');
+const validateRate = require('../middlewares/validate_rate');
+
+const talkerRoute = path.resolve(__dirname, './talker.json');
 
 const app = express();
 app.use(express.json());
@@ -54,4 +63,24 @@ app.post('/login', validateEmail, validatePassword, async (req, res) => {
   }
   const tokenGen = genToken();
   return res.status(HTTP_OK_STATUS).json({ token: tokenGen });
+});
+
+app.post('/talker', validateAuth, validateName, validateAge, 
+  validateTalk, validateWatchedAt, validateRate, 
+    async (req, res) => {
+  const { name, age, talk } = req.body;
+  const { watchedAt, rate } = talk;
+  const data = await readFile();
+  const newData = {
+    id: data[data.length - 1].id + 1,
+    name,
+    age,
+    talk: {
+      watchedAt,
+      rate,
+    },
+  };  
+  const allData = JSON.stringify([...data, newData]);
+  await fs.writeFile(talkerRoute, allData);
+  return res.status(201).json(newData);
 });
