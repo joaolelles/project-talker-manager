@@ -37,6 +37,18 @@ const readFile = async () => {
   }
 };
 
+app.get('/talker/search', validateAuth, async (req, res) => {
+  const data = await readFile();
+  const { q } = req.query;
+  if (q) {
+    const filteredData = data.filter((el) => el.name.includes(q));
+    return res.status(200).json(filteredData);
+  } if (!q) {
+  return res.status(200).send(data);
+  }
+  return res.status(200).end();
+});
+
 app.get('/talker', async (_request, response) => {
   const read = await readFile();
   if (!read) {
@@ -84,15 +96,6 @@ app.post('/talker', validateAuth, validateName, validateAge,
   await fs.writeFile(talkerRoute, allData);
   return res.status(201).json(newData);
 });
-
-// app.put('/talker/:id',  async (req, res) => {
-//   const { email, password } = req.body;
-//   if ([email, password].includes(undefined)) {
-//     res.status(401).json({ message: 'Email ou Password não preenchido' });
-//   }
-//   const tokenGen = genToken();
-//   return res.status(HTTP_OK_STATUS).json({ token: tokenGen });
-// });
 
 app.delete('/talker/:id', validateAuth, async (req, res) => {
   const { id } = req.params;
