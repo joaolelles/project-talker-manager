@@ -84,3 +84,21 @@ app.post('/talker', validateAuth, validateName, validateAge,
   await fs.writeFile(talkerRoute, allData);
   return res.status(201).json(newData);
 });
+
+// app.put('/talker/:id',  async (req, res) => {
+//   const { email, password } = req.body;
+//   if ([email, password].includes(undefined)) {
+//     res.status(401).json({ message: 'Email ou Password não preenchido' });
+//   }
+//   const tokenGen = genToken();
+//   return res.status(HTTP_OK_STATUS).json({ token: tokenGen });
+// });
+
+app.delete('/talker/:id', validateAuth, async (req, res) => {
+  const { id } = req.params;
+  const data = await readFile();
+  const filteredData = data.filter((el) => el.id !== Number(id));
+  const newData = JSON.stringify(filteredData, null, 2);
+  await fs.writeFile(talkerRoute, newData);
+  res.status(204).end();
+  });
